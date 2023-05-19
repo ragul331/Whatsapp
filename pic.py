@@ -18,7 +18,8 @@ options.add_argument("--user-data-dir=/var/tmp/chrome_user_data")
 new_msg_time = 7            
 send_msg_time = 3         
 action_time = 2               
-image_path ="C:/ragul.jpeg"
+image_path ="C:\WhatsApp Video 2023-04-21 at 9.37.43 AM.mp4"#image path
+
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 driver.get('https://web.whatsapp.com')
 input("Press ENTER...")
@@ -50,7 +51,7 @@ with open('numbers.txt', 'r') as file:
             actions.perform()
             time.sleep(send_msg_time)
             cnt=cnt+1
-            f=open("whatsapp_number.txt","a")
+            f=open("whatsapp_number.txt","w")
             f.write(num+'\n')
         except Exception as e:
             continue

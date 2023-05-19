@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -38,7 +39,7 @@ print( 'We found ' + str(total_number) + ' numbers in the file' )
 delay = 7
 
 f=open("whatsapp_number.txt","w")
-driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 driver.get('https://web.whatsapp.com')
 input("Press ENTER...")
 for idx, number in enumerate(numbers):
@@ -68,8 +69,8 @@ for idx, number in enumerate(numbers):
 	except Exception as e:
 		print('Failed to send message to 1 ' + number + str(e))
 		not_send.append(number)
-print(wh_number)
-print(not_send)
+print(len(wh_number))
+# print(not_send)
 driver.close()
 
 
