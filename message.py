@@ -1,75 +1,43 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from time import sleep
-from urllib.parse import quote
-import os
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+import time
+from selenium.webdriver.chrome.options import Options
 
-options = Options()
-options.add_experimental_option("excludeSwitches", ["enable-logging"])
-options.add_argument("--profile-directory=Default")
-options.add_argument("--user-data-dir=/var/tmp/chrome_user_data")
+options = webdriver.ChromeOptions()
+options.add_argument("--user-data-dir=/home/username/.config/google-chrome")
 
-os.system("")
-os.environ["WDM_LOG_LEVEL"] = "0"
+driver = webdriver.Chrome(options=options)  
 
-f = open("message.txt", "r", encoding="utf8")
-message = f.read()
-f.close()
+image_path="C:\KEERTHANA.S_Resume.pdf"
 
-print('\nThis is your message-')
-print(message)
-print("\n")
-message = quote(message)
-
-wh_number=[]
-not_send=[]
-numbers = []
-f = open("numbers.txt", "r")
-for line in f.read().splitlines():
-	if line.strip() != "":
-		numbers.append(line.strip())
-f.close()
-total_number=len(numbers)
-print( 'We found ' + str(total_number) + ' numbers in the file' )
-delay = 7
-
-f=open("whatsapp_number.txt","w")
-driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 driver.get('https://web.whatsapp.com')
 input("Press ENTER...")
-for idx, number in enumerate(numbers):
-	number = number.strip()
-	if number == "":
-		continue
-	print('{}/{} => Sending message to {}.'.format((idx+1), total_number, number) )
-	try:
-		url = 'https://web.whatsapp.com/send?phone=' + number + '&text=' + message
-		sent = False
-		if not sent:
-			driver.get(url)
-			try:
-				click_btn = WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.XPATH, "//button[@data-testid='compose-btn-send']")))
-			except Exception as e:
-				print(f"\nFailed to send message to: {number}")
-				not_send.append(number)
-			else:
-				sleep(1)
-				click_btn.click()
-				sent=True
-				sleep(1)
-				print('Message sent to: ' + number)
-				wh_number.append(number)
-				f.write(number)
-				f.write("\n")
-	except Exception as e:
-		print('Failed to send message to 1 ' + number + str(e))
-		not_send.append(number)
-print(wh_number)
-print(not_send)
-driver.close()
 
+with open('message.txt', 'r') as file:
+    msg = file.read()
 
+link = 'https://web.whatsapp.com'
+driver.get(link)
+
+with open('numbers.txt', 'r') as file:
+    for n in file.readlines():
+        num = n.rstrip()
+        link = f'https://web.whatsapp.com/send/?phone={num}'
+        driver.get(link)
+        time.sleep(10)
+        actions = ActionChains(driver)
+        attach_btn= driver.find_element(By.XPATH,'/html/body/div[1]/div/div/div[5]/div/footer/div[1]/div/span[2]/div/div[1]/div[2]/div/div')
+        attach_btn.click()
+        image_btn= driver.find_element(By.XPATH,'/html/body/div[1]/div/div/div[5]/div/footer/div[1]/div/span[2]/div/div[1]/div[2]/div/span/div/ul/div/div[1]/li/div/input')
+        image_btn.send_keys(image_path)
+        time.sleep(5)
+        for line in msg.split('\n'):
+            actions.send_keys(line)
+            actions.key_down(Keys.SHIFT).send_keys(Keys.ENTER).key_up(Keys.SHIFT)
+        actions.send_keys(Keys.ENTER)
+        actions.perform()
+        time.sleep(2)
+driver.quit()
